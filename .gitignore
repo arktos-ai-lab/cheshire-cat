@@ -1,0 +1,11 @@
+/target/
+**/*.rs.bk
+Cargo.lock
+node_modules/
+dist/
+src-tauri/target/
+*.db
+*.db-shm
+*.db-wal
+.DS_Store
+Thumbs.db
