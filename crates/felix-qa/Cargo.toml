@@ -1,0 +1,10 @@
+[package]
+name = "felix-qa"
+version = "0.1.0"
+edition = "2021"
+description = "Quality assurance checks for Felix CAT"
+
+[dependencies]
+serde = { workspace = true }
+thiserror = { workspace = true }
+regex = { workspace = true }

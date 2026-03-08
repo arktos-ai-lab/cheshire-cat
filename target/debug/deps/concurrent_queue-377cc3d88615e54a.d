@@ -1,0 +1,11 @@
+G:\GitHub\felix-cat\target\debug\deps\concurrent_queue-377cc3d88615e54a.d: C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\lib.rs C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\bounded.rs C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\single.rs C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\unbounded.rs C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\sync.rs
+
+G:\GitHub\felix-cat\target\debug\deps\libconcurrent_queue-377cc3d88615e54a.rlib: C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\lib.rs C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\bounded.rs C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\single.rs C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\unbounded.rs C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\sync.rs
+
+G:\GitHub\felix-cat\target\debug\deps\libconcurrent_queue-377cc3d88615e54a.rmeta: C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\lib.rs C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\bounded.rs C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\single.rs C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\unbounded.rs C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\sync.rs
+
+C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\lib.rs:
+C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\bounded.rs:
+C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\single.rs:
+C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\unbounded.rs:
+C:\Users\evgga\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\concurrent-queue-2.5.0\src\sync.rs:
