@@ -45,7 +45,10 @@ jobs:
             libsoup-3.0-dev \
             libxdo-dev \
             libxcb-shape0-dev \
-            libxcb-xfixes0-dev
+            libxcb-xfixes0-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            patchelf
 
       - name: Run workspace tests
         run: cargo test --workspace
@@ -190,7 +193,7 @@ jobs:
             libxdo-dev \
             libxcb-shape0-dev \
             libxcb-xfixes0-dev \
-            libappindicator3-dev \
+            libayatana-appindicator3-dev \
             librsvg2-dev \
             patchelf
 
@@ -204,7 +207,11 @@ jobs:
         run: npm ci
 
       - name: Build Tauri app (Linux)
-        run: npx @tauri-apps/cli build
+        shell: bash
+        run: |
+          [[ -z "$TAURI_SIGNING_PRIVATE_KEY" ]] && \
+            unset TAURI_SIGNING_PRIVATE_KEY TAURI_SIGNING_PRIVATE_KEY_PASSWORD
+          npx @tauri-apps/cli build
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
@@ -243,6 +250,7 @@ jobs:
         with:
           name: cheshire-cat-windows
           path: dist/windows
+        continue-on-error: true
 
       - name: Download Windows signatures
         uses: actions/download-artifact@v4
@@ -308,7 +316,7 @@ jobs:
 
           python3 - <<PYEOF
           import json, os
-          version       = os.environ.get("VERSION", "0.0.0")
+          version       = "${VERSION}"
           pub_date      = "${PUB_DATE}"
           base_url      = "${BASE_URL}"
           win_msi       = "${WIN_MSI}"
@@ -366,7 +374,7 @@ jobs:
             | `*.AppImage` | Linux x64 (universal, no install needed) |
             | `*.deb` | Debian / Ubuntu x64 |
 
-            ### What works in v0.0.1
+            ### What works in ${{ github.ref_name }}
             - Translation memory with fuzzy and exact matching
             - AI-assisted suggestions (via local Ollama or OpenAI API)
             - QA checks — tag consistency, number consistency
