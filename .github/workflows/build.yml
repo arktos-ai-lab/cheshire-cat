@@ -34,6 +34,19 @@ jobs:
       - name: Cache Rust build artefacts
         uses: Swatinem/rust-cache@v2
 
+      - name: Install Linux system dependencies (Tauri / WebKit2GTK)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgtk-3-dev \
+            libwebkit2gtk-4.1-dev \
+            libjavascriptcoregtk-4.1-dev \
+            libsoup-3.0-dev \
+            libxdo-dev \
+            libxcb-shape0-dev \
+            libxcb-xfixes0-dev
+
       - name: Run workspace tests
         run: cargo test --workspace
 
@@ -137,10 +150,73 @@ jobs:
           path: src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.sig
           if-no-files-found: warn
 
+  # ── Desktop bundle (Linux) ───────────────────────────────────────────────────
+  bundle-linux:
+    name: Bundle (Linux)
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust build artefacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install Linux system dependencies (Tauri / WebKit2GTK)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgtk-3-dev \
+            libwebkit2gtk-4.1-dev \
+            libjavascriptcoregtk-4.1-dev \
+            libsoup-3.0-dev \
+            libxdo-dev \
+            libxcb-shape0-dev \
+            libxcb-xfixes0-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build Tauri app (Linux)
+        run: npx @tauri-apps/cli build
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+
+      - name: Upload Linux AppImage
+        uses: actions/upload-artifact@v4
+        with:
+          name: cheshire-cat-linux
+          path: |
+            src-tauri/target/release/bundle/appimage/*.AppImage
+            src-tauri/target/release/bundle/deb/*.deb
+          if-no-files-found: warn
+
+      - name: Upload Linux signatures
+        uses: actions/upload-artifact@v4
+        with:
+          name: cheshire-cat-linux-sigs
+          path: |
+            src-tauri/target/release/bundle/appimage/*.sig
+          if-no-files-found: warn
+
   # ── GitHub Release ───────────────────────────────────────────────────────────
   release:
     name: Release
-    needs: [bundle-windows, bundle-macos]
+    needs: [bundle-windows, bundle-macos, bundle-linux]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     permissions:
@@ -176,6 +252,20 @@ jobs:
           path: dist/macos-sigs
         continue-on-error: true
 
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cheshire-cat-linux
+          path: dist/linux
+        continue-on-error: true
+
+      - name: Download Linux signatures
+        uses: actions/download-artifact@v4
+        with:
+          name: cheshire-cat-linux-sigs
+          path: dist/linux-sigs
+        continue-on-error: true
+
       - name: Generate updater manifest (latest.json)
         env:
           TAG: ${{ github.ref_name }}
@@ -196,16 +286,24 @@ jobs:
 
           WIN_MSI="$(ls dist/windows/*.msi 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo '')"
           MAC_DMG="$(ls dist/macos/*.dmg 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo '')"
+          LIN_APPIMAGE="$(ls dist/linux/*.AppImage 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo '')"
+
+          LIN_SIG=""
+          if ls dist/linux-sigs/*.sig 2>/dev/null | head -1 | xargs test -f 2>/dev/null; then
+            LIN_SIG="$(cat dist/linux-sigs/*.sig | head -1)"
+          fi
 
           python3 - <<PYEOF
           import json, os
-          version  = os.environ.get("VERSION", "0.0.0")
-          pub_date = "${PUB_DATE}"
-          base_url = "${BASE_URL}"
-          win_msi  = "${WIN_MSI}"
-          mac_dmg  = "${MAC_DMG}"
-          win_sig  = r"""${WIN_SIG}"""
-          mac_sig  = r"""${MAC_SIG}"""
+          version       = os.environ.get("VERSION", "0.0.0")
+          pub_date      = "${PUB_DATE}"
+          base_url      = "${BASE_URL}"
+          win_msi       = "${WIN_MSI}"
+          mac_dmg       = "${MAC_DMG}"
+          lin_appimage  = "${LIN_APPIMAGE}"
+          win_sig       = r"""${WIN_SIG}"""
+          mac_sig       = r"""${MAC_SIG}"""
+          lin_sig       = r"""${LIN_SIG}"""
 
           manifest = {
               "version": version,
@@ -224,6 +322,11 @@ jobs:
                       "signature": mac_sig,
                       "url": f"{base_url}/{mac_dmg}"
                   }
+          if lin_appimage:
+              manifest["platforms"]["linux-x86_64"] = {
+                  "signature": lin_sig,
+                  "url": f"{base_url}/{lin_appimage}"
+              }
 
           with open("dist/latest.json", "w") as f:
               json.dump(manifest, f, indent=2)
@@ -247,6 +350,8 @@ jobs:
             |------|----------|
             | `*.msi` or `*-setup.exe` | Windows 10/11 x64 |
             | `*.dmg` | macOS (Apple Silicon + Intel universal) |
+            | `*.AppImage` | Linux x64 (universal, no install needed) |
+            | `*.deb` | Debian / Ubuntu x64 |
 
             ### What works in v0.0.1
             - Translation memory with fuzzy and exact matching
@@ -256,7 +361,7 @@ jobs:
             - React/Tauri desktop shell
 
             ### Requirements
-            - Windows 10/11 (64-bit) or macOS 12+
+            - Windows 10/11 (64-bit), macOS 12+, or Linux x64 (WebKit2GTK 4.1)
             - For AI features: [Ollama](https://ollama.ai) with a supported model
 
             ---
@@ -267,6 +372,8 @@ jobs:
             dist/windows/*.msi
             dist/windows/*.exe
             dist/macos/*.dmg
+            dist/linux/*.AppImage
+            dist/linux/*.deb
             dist/latest.json
           fail_on_unmatched_files: false
           generate_release_notes: false
