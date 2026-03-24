@@ -127,7 +127,15 @@ jobs:
         run: npm ci
 
       - name: Build Tauri app (macOS universal)
-        run: npx @tauri-apps/cli build --target universal-apple-darwin
+        shell: bash
+        run: |
+          # Unset signing vars if the certificate secret is empty — Tauri 2
+          # calls `security import` even on empty strings, which crashes the build.
+          # When the vars are absent, Tauri produces an unsigned .dmg instead.
+          [[ -z "$APPLE_CERTIFICATE" ]] && \
+            unset APPLE_CERTIFICATE APPLE_CERTIFICATE_PASSWORD \
+                  APPLE_SIGNING_IDENTITY APPLE_ID APPLE_PASSWORD APPLE_TEAM_ID
+          npx @tauri-apps/cli build --target universal-apple-darwin
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
