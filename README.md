@@ -4,8 +4,6 @@
 
 > The name is a deliberate double meaning: the Cheshire Cat from *Alice in Wonderland* — known for its enigmatic grin and tendency to appear and disappear — and **CAT**, for Computer-Assisted Translation. Just as Felix was a wink at the cartoon cat, Cheshire CAT is a wink at its famous cousin.
 
-![Cheshire CAT](cheshire-cat-logo.png)
-
 ## Status
 
 **Early developer preview (v0.0.1).** Core translation memory, AI-assisted suggestions, and QA checks are functional. Office add-in integration is under active development.
@@ -96,7 +94,7 @@ cargo test --workspace   # all tests
 MIT License — see [LICENSE](LICENSE).
 
 Cheshire CAT is maintained by Ernst van Gassen under the same MIT license that covered Felix.
-Original Felix CAT by Ryan Ginstrom, 1999–2015.
+Original Felix CAT by Ryan Ginstrom, 1999–2015 — archived at [felix-cat-original](https://github.com/arktos-ai-lab/felix-cat-original) · maintained fork at [felix-cat-classic](https://github.com/arktos-ai-lab/felix-cat-classic).
 
 ## Support Arktos AI Lab
 
