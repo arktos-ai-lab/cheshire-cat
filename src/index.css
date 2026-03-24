@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #1e293b;
+    background-color: #f8fafc;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  textarea {
+    resize: none;
+    font-family: inherit;
+  }
+}
+
+@layer components {
+  .segment-area {
+    @apply w-full h-full p-3 border border-slate-200 rounded-lg bg-white
+           focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent
+           text-sm leading-relaxed;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md
+           bg-brand-600 text-white text-sm font-medium
+           hover:bg-brand-700 active:bg-brand-700
+           disabled:opacity-50 disabled:cursor-not-allowed
+           transition-colors;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md
+           bg-white text-slate-700 text-sm font-medium border border-slate-300
+           hover:bg-slate-50 active:bg-slate-100
+           disabled:opacity-50 disabled:cursor-not-allowed
+           transition-colors;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md
+           bg-white text-red-600 text-sm font-medium border border-red-300
+           hover:bg-red-50
+           disabled:opacity-50 disabled:cursor-not-allowed
+           transition-colors;
+  }
+
+  .card {
+    @apply bg-white border border-slate-200 rounded-lg shadow-sm;
+  }
+
+  .input {
+    @apply w-full px-3 py-1.5 border border-slate-300 rounded-md text-sm
+           focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent
+           bg-white;
+  }
+
+  .label {
+    @apply block text-xs font-medium text-slate-600 mb-1;
+  }
+}

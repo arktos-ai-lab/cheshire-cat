@@ -1,0 +1,274 @@
+name: Build & Release
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  # ── Tests (fast, runs on all platforms) ─────────────────────────────────────
+  test:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust build artefacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Run workspace tests
+        run: cargo test --workspace
+
+  # ── Desktop bundle (Windows) ─────────────────────────────────────────────────
+  bundle-windows:
+    name: Bundle (Windows)
+    needs: test
+    runs-on: windows-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust build artefacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build Tauri app (Windows)
+        run: npx @tauri-apps/cli build
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+
+      - name: Upload Windows installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: cheshire-cat-windows
+          path: |
+            src-tauri/target/release/bundle/msi/*.msi
+            src-tauri/target/release/bundle/nsis/*.exe
+          if-no-files-found: warn
+
+      - name: Upload Windows signatures
+        uses: actions/upload-artifact@v4
+        with:
+          name: cheshire-cat-windows-sigs
+          path: |
+            src-tauri/target/release/bundle/msi/*.sig
+            src-tauri/target/release/bundle/nsis/*.sig
+          if-no-files-found: warn
+
+  # ── Desktop bundle (macOS) ───────────────────────────────────────────────────
+  bundle-macos:
+    name: Bundle (macOS)
+    needs: test
+    runs-on: macos-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - name: Cache Rust build artefacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build Tauri app (macOS universal)
+        run: npx @tauri-apps/cli build --target universal-apple-darwin
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Upload macOS bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: cheshire-cat-macos
+          path: src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
+          if-no-files-found: warn
+
+      - name: Upload macOS signatures
+        uses: actions/upload-artifact@v4
+        with:
+          name: cheshire-cat-macos-sigs
+          path: src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.sig
+          if-no-files-found: warn
+
+  # ── GitHub Release ───────────────────────────────────────────────────────────
+  release:
+    name: Release
+    needs: [bundle-windows, bundle-macos]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cheshire-cat-windows
+          path: dist/windows
+
+      - name: Download Windows signatures
+        uses: actions/download-artifact@v4
+        with:
+          name: cheshire-cat-windows-sigs
+          path: dist/windows-sigs
+        continue-on-error: true
+
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cheshire-cat-macos
+          path: dist/macos
+        continue-on-error: true
+
+      - name: Download macOS signatures
+        uses: actions/download-artifact@v4
+        with:
+          name: cheshire-cat-macos-sigs
+          path: dist/macos-sigs
+        continue-on-error: true
+
+      - name: Generate updater manifest (latest.json)
+        env:
+          TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          VERSION="${TAG#v}"
+          PUB_DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          BASE_URL="https://github.com/${REPO}/releases/download/${TAG}"
+
+          WIN_SIG=""
+          if ls dist/windows-sigs/*.sig 2>/dev/null | head -1 | xargs test -f 2>/dev/null; then
+            WIN_SIG="$(cat dist/windows-sigs/*.sig | head -1)"
+          fi
+          MAC_SIG=""
+          if ls dist/macos-sigs/*.sig 2>/dev/null | head -1 | xargs test -f 2>/dev/null; then
+            MAC_SIG="$(cat dist/macos-sigs/*.sig | head -1)"
+          fi
+
+          WIN_MSI="$(ls dist/windows/*.msi 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo '')"
+          MAC_DMG="$(ls dist/macos/*.dmg 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo '')"
+
+          python3 - <<PYEOF
+          import json, os
+          version  = os.environ.get("VERSION", "0.0.0")
+          pub_date = "${PUB_DATE}"
+          base_url = "${BASE_URL}"
+          win_msi  = "${WIN_MSI}"
+          mac_dmg  = "${MAC_DMG}"
+          win_sig  = r"""${WIN_SIG}"""
+          mac_sig  = r"""${MAC_SIG}"""
+
+          manifest = {
+              "version": version,
+              "notes": "See the GitHub release for details.",
+              "pub_date": pub_date,
+              "platforms": {}
+          }
+          if win_msi:
+              manifest["platforms"]["windows-x86_64"] = {
+                  "signature": win_sig,
+                  "url": f"{base_url}/{win_msi}"
+              }
+          if mac_dmg:
+              for arch in ("darwin-aarch64", "darwin-x86_64"):
+                  manifest["platforms"][arch] = {
+                      "signature": mac_sig,
+                      "url": f"{base_url}/{mac_dmg}"
+                  }
+
+          with open("dist/latest.json", "w") as f:
+              json.dump(manifest, f, indent=2)
+          print("Generated dist/latest.json")
+          PYEOF
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Cheshire CAT ${{ github.ref_name }}"
+          body: |
+            ## Cheshire CAT ${{ github.ref_name }} — Developer Preview
+
+            Cross-platform CAT tool built with Rust + Tauri 2. Spiritual successor to Felix CAT.
+
+            > **Note:** This is an early developer preview. Core translation memory, AI suggestions,
+            > and QA checks are functional. Office add-in integration is under active development.
+
+            ### Downloads
+            | File | Platform |
+            |------|----------|
+            | `*.msi` or `*-setup.exe` | Windows 10/11 x64 |
+            | `*.dmg` | macOS (Apple Silicon + Intel universal) |
+
+            ### What works in v0.0.1
+            - Translation memory with fuzzy and exact matching
+            - AI-assisted suggestions (via local Ollama or OpenAI API)
+            - QA checks — tag consistency, number consistency
+            - Multi-format import (XLIFF, plain text)
+            - React/Tauri desktop shell
+
+            ### Requirements
+            - Windows 10/11 (64-bit) or macOS 12+
+            - For AI features: [Ollama](https://ollama.ai) with a supported model
+
+            ---
+            Original Felix CAT by Ryan Ginstrom. Cheshire CAT maintained by Ernst van Gassen. MIT licensed.
+
+            [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://paypal.me/VanGassen)
+          files: |
+            dist/windows/*.msi
+            dist/windows/*.exe
+            dist/macos/*.dmg
+            dist/latest.json
+          fail_on_unmatched_files: false
+          generate_release_notes: false
+          draft: false
+          prerelease: true

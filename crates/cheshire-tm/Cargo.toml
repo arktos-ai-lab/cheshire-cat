@@ -1,0 +1,28 @@
+[package]
+name = "cheshire-tm"
+version = "0.1.0"
+edition = "2021"
+description = "Translation memory engine for Cheshire CAT"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+regex = { workspace = true }
+
+sqlx = { version = "0.8", features = ["runtime-tokio", "sqlite", "chrono", "uuid", "migrate"] }
+rayon = "1"
+unicode-normalization = "0.1"
+strsim = "0.11"
+quick-xml = { version = "0.37", features = ["serialize"] }
+sha2 = "0.10"
+hex = "0.4"
+itertools = "0.13"
+
+[dev-dependencies]
+tempfile = "3"
+tokio = { workspace = true, features = ["test-util"] }

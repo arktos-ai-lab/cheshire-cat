@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    felix_cat_lib::run();
+    cheshire_cat_lib::run();
 }

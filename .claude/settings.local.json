@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"G:/GitHub/felix-cat\" && npm run tauri dev 2>&1)",
+      "Bash(cd \"G:/GitHub/felix-cat\" && npx tauri icon felix_logo.png 2>&1)",
+      "Bash(ls \"G:/GitHub/felix-cat/src/assets\" 2>/dev/null || mkdir -p \"G:/GitHub/felix-cat/src/assets\" && cp \"G:/GitHub/felix-cat/felix_logo.png\" \"G:/GitHub/felix-cat/src/assets/felix_logo.png\" && echo \"copied\")",
+      "Bash(cd \"G:/GitHub/felix-cat\" && cargo check --workspace 2>&1)",
+      "Bash(cat \"C:\\\\Users\\\\evgga\\\\.claude\\\\projects\\\\G--GitHub-felix-cat\\\\28765d20-bd6b-4a3e-8343-c52e9928ad04\\\\tool-results\\\\toolu_01TZqAMzN1B8akejmsqiYTun.txt\" 2>&1 | python3 -c \"import sys,json; data=json.load\\(sys.stdin\\); print\\(data[0]['text']\\)\" 2>/dev/null || cat \"C:\\\\Users\\\\evgga\\\\.claude\\\\projects\\\\G--GitHub-felix-cat\\\\28765d20-bd6b-4a3e-8343-c52e9928ad04\\\\tool-results\\\\toolu_01TZqAMzN1B8akejmsqiYTun.txt\" | head -c 40000)",
+      "Bash(cd \"G:/GitHub/felix-cat\" && cargo check -p felix-cat-tauri 2>&1 | tail -20)",
+      "Bash(cd \"G:/GitHub/felix-cat\" && cargo check --manifest-path src-tauri/Cargo.toml 2>&1 | grep -E \"^error\" | head -20)",
+      "Bash(cd \"G:/GitHub/felix-cat\" && cargo check --manifest-path src-tauri/Cargo.toml 2>&1 | tail -10)",
+      "Bash(cd \"G:/GitHub/felix-cat\" && npx tsc --noEmit 2>&1 | grep -E \"error TS|\\\\.tsx.*error\" | head -20)",
+      "Bash(cd \"G:/GitHub/felix-cat\" && npx tsc --noEmit 2>&1 | grep -E \"error TS\" | head -20)",
+      "Bash(cd \"G:/GitHub/felix-cat/src-tauri\" && cargo check 2>&1 | grep -E \"^error|Finished\" | head -20)",
+      "Bash(grep -rn \"target_os\\\\|windows\\\\|cfg\\(win\\\\|winapi\\\\|WINDOWS\" \"G:/GitHub/felix-cat/crates\" --include=\"*.rs\" | grep -v \"target/\\\\|\\\\.git\" | grep -v \"//.*windows\" | head -30)",
+      "Bash(cd \"G:/GitHub/felix-cat\" && npx tsc --noEmit 2>&1 | grep \"error TS\" | head -10)",
+      "Bash(find /g/GitHub/felix-cat -type f \\\\\\( -name \"*.ts\" -o -name \"*.tsx\" \\\\\\) 2>/dev/null | grep -v node_modules | head -30)",
+      "Bash(grep -n \"#\\\\[tauri::command\\\\]\" /g/GitHub/felix-cat/src-tauri/src/commands/*.rs)",
+      "Bash(grep -A1 \"#\\\\[tauri::command\\\\]\" /g/GitHub/felix-cat/src-tauri/src/commands/*.rs | grep \"^.*pub fn\" | sed 's/.*pub fn \\\\\\([a-z_]*\\\\\\).*/\\\\1/' | sort)",
+      "Bash(grep -n \"console\\\\.\" /g/GitHub/felix-cat/src/views/*.tsx | head -20)",
+      "Bash(grep -r \"http://\\\\|https://\" /g/GitHub/felix-cat/src -type f \\\\\\( -name \"*.tsx\" -o -name \"*.ts\" \\\\\\) | grep -v node_modules | head -20)",
+      "Bash(grep -r \"http://\" /g/GitHub/felix-cat/src --include=\"*.tsx\" --include=\"*.ts\" 2>/dev/null | head -20)",
+      "Bash(cd \"G:/GitHub/felix-cat\" && npx tsc --noEmit 2>&1 | grep \"error TS\" | head -20)",
+      "Bash(cd \"G:/GitHub/felix-cat\" && cargo test --workspace 2>&1 | tail -40)",
+      "Bash(cd \"G:/GitHub/felix-cat\" && cargo test --workspace 2>&1 | grep -E \"^test |FAILED|passed|failed|error\\\\[\" | head -50)",
+      "Bash(cd \"G:/GitHub/felix-cat\" && cargo test --workspace 2>&1 | grep -E \"test result:|FAILED\" | head -20)",
+      "Bash(cd \"G:/GitHub/felix-cat\" && cargo test --workspace 2>&1 | grep -A 20 \"xliff::tests::parse_xliff20\")",
+      "Bash(cd \"G:/GitHub/felix-cat\" && cargo test -p felix-tm 2>&1 | grep -E \"test result:|FAILED|ok$\" | head -20)",
+      "Bash(cd \"G:/GitHub/felix-cat\" && cargo test -p felix-tm 2>&1 | grep -E \"test result:|FAILED|error\\\\[\")",
+      "Bash(cd \"G:/GitHub/felix-cat\" && cargo test --workspace 2>&1 | grep -E \"test result:|FAILED|error\\\\[\")",
+      "Bash(cd \"G:/GitHub/felix-cat\" && cargo test --workspace 2>&1 | grep -E \"test result:|FAILED|error\\\\[\" | head -20)",
+      "Bash(cd G:/GitHub/felix-cat && cargo check -p felix-formats 2>&1 | tail -20)",
+      "Bash(cd G:/GitHub/felix-cat && cargo check -p felix-cat 2>&1 | tail -20)",
+      "Bash(cd G:/GitHub/felix-cat && cargo check -p felix-cat 2>&1 | tail -15)",
+      "Bash(cd G:/GitHub/felix-cat && cargo test -p felix-formats 2>&1 | tail -20)",
+      "Bash(cd G:/GitHub/felix-cat && cargo test -p felix-cat normalise_lang 2>&1 | tail -15)",
+      "Bash(cd G:/GitHub/felix-cat && cargo test -p felix-tm 2>&1 | tail -10)"
+    ]
+  }
+}

@@ -1,9 +1,10 @@
 [workspace]
 members = [
-    "crates/felix-tm",
-    "crates/felix-segmenter",
-    "crates/felix-ai",
-    "crates/felix-qa",
+    "crates/cheshire-tm",
+    "crates/cheshire-segmenter",
+    "crates/cheshire-ai",
+    "crates/cheshire-qa",
+    "crates/cheshire-formats",
     "src-tauri",
 ]
 resolver = "2"
@@ -17,3 +18,5 @@ tracing = "0.1"
 uuid = { version = "1", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
 regex = "1"
+quick-xml = { version = "0.37", features = ["serialize"] }
+zip = "2"

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<OfficeApp
+  xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:type="TaskPaneApp">
+
+  <Id>a3f8c2d1-4e7b-4a9f-8c3d-2b1e5f9a7c4e</Id>
+  <Version>1.0.0</Version>
+  <ProviderName>Felix CAT</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="Felix CAT"/>
+  <Description DefaultValue="Translation memory and glossary lookup for Felix CAT"/>
+  <IconUrl DefaultValue="https://localhost:8765/addin/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://localhost:8765/addin/icon-64.png"/>
+  <SupportUrl DefaultValue="https://github.com/felixcat/felix-cat"/>
+
+  <Hosts>
+    <Host Name="Document"/>  <!-- Word -->
+    <Host Name="Workbook"/>  <!-- Excel -->
+    <Host Name="Presentation"/> <!-- PowerPoint -->
+  </Hosts>
+
+  <DefaultSettings>
+    <SourceLocation DefaultValue="http://localhost:8765/addin/taskpane.html"/>
+  </DefaultSettings>
+
+  <Permissions>ReadWriteDocument</Permissions>
+</OfficeApp>

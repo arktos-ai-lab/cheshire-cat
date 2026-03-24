@@ -1,0 +1,12 @@
+[package]
+name = "cheshire-segmenter"
+version = "0.1.0"
+edition = "2021"
+description = "Text segmentation for Cheshire CAT (OOXML, HTML, PO, JSON)"
+
+[dependencies]
+serde = { workspace = true }
+thiserror = { workspace = true }
+regex = { workspace = true }
+zip = "2"
+quick-xml = "0.37"

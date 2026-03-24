@@ -1,0 +1,10 @@
+[package]
+name = "cheshire-qa"
+version = "0.1.0"
+edition = "2021"
+description = "Quality assurance checks for Cheshire CAT"
+
+[dependencies]
+serde = { workspace = true }
+thiserror = { workspace = true }
+regex = { workspace = true }

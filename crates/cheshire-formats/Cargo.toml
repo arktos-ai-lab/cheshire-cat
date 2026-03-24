@@ -1,0 +1,16 @@
+[package]
+name = "cheshire-formats"
+version = "0.1.0"
+edition = "2021"
+description = "File format import/export for Cheshire CAT (XLIFF, DOCX, PO, JSON, HTML, plain text)"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+regex = { workspace = true }
+quick-xml = { workspace = true }
+zip = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3"

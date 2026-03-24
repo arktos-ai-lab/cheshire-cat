@@ -1,26 +1,33 @@
 [package]
-name = "felix-cat"
-version = "0.1.0"
+name = "cheshire-cat"
+version = "0.0.1"
 edition = "2021"
-description = "Felix CAT — Tauri desktop application"
+description = "Cheshire CAT — Tauri desktop application"
 
 [lib]
-name = "felix_cat_lib"
+name = "cheshire_cat_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [dependencies]
 tauri = { version = "2", features = [] }
-tauri-plugin-store = "2"
 tauri-plugin-dialog = "2"
 serde = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true }
 thiserror = { workspace = true }
+uuid = { workspace = true }
 
-felix-tm = { path = "../crates/felix-tm" }
-felix-ai = { path = "../crates/felix-ai" }
-felix-qa = { path = "../crates/felix-qa" }
-felix-segmenter = { path = "../crates/felix-segmenter" }
+cheshire-tm = { path = "../crates/cheshire-tm" }
+cheshire-ai = { path = "../crates/cheshire-ai" }
+cheshire-qa = { path = "../crates/cheshire-qa" }
+cheshire-segmenter = { path = "../crates/cheshire-segmenter" }
+cheshire-formats = { path = "../crates/cheshire-formats" }
+
+axum = "0.7"
+tracing = { workspace = true }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+semver = "1"
+tauri-plugin-shell = "2"
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }

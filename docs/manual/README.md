@@ -1,8 +1,8 @@
 # Felix Manual 1.7.1.1 — Documentation
 
-> **Note:** Documentation for Felix 1.7.1.1 (original). Preserved from felix-cat.com for the Felix revival project.
+> **Note:** Documentation for Felix 1.7.1.1 (original). Preserved from cheshire-cat.com for the Felix revival project.
 
-This directory contains the Felix CAT tool manual, converted from the original HTML documentation to GitHub-flavoured Markdown.
+This directory contains the Cheshire CAT tool manual, converted from the original HTML documentation to GitHub-flavoured Markdown.
 
 ---
 
@@ -86,4 +86,4 @@ This directory contains the Felix CAT tool manual, converted from the original H
 
 ---
 
-*Original documentation from felix-cat.com, archived 2018. Converted to Markdown for the Felix revival project.*
+*Original documentation from cheshire-cat.com, archived 2018. Converted to Markdown for the Felix revival project.*
