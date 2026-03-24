@@ -76,7 +76,12 @@ jobs:
         run: npm ci
 
       - name: Build Tauri app (Windows)
-        run: npx @tauri-apps/cli build
+        shell: bash
+        run: |
+          # Skip updater signing if the key secret is absent (produces unsigned .msi/.exe)
+          [[ -z "$TAURI_SIGNING_PRIVATE_KEY" ]] && \
+            unset TAURI_SIGNING_PRIVATE_KEY TAURI_SIGNING_PRIVATE_KEY_PASSWORD
+          npx @tauri-apps/cli build
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
