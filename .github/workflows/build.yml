@@ -296,23 +296,26 @@ jobs:
           PUB_DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           BASE_URL="https://github.com/${REPO}/releases/download/${TAG}"
 
-          WIN_SIG=""
-          if ls dist/windows-sigs/*.sig 2>/dev/null | head -1 | xargs test -f 2>/dev/null; then
-            WIN_SIG="$(cat dist/windows-sigs/*.sig | head -1)"
-          fi
-          MAC_SIG=""
-          if ls dist/macos-sigs/*.sig 2>/dev/null | head -1 | xargs test -f 2>/dev/null; then
-            MAC_SIG="$(cat dist/macos-sigs/*.sig | head -1)"
-          fi
+          # Ensure dist/ exists even when all artifact downloads failed
+          mkdir -p dist
 
-          WIN_MSI="$(ls dist/windows/*.msi 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo '')"
-          MAC_DMG="$(ls dist/macos/*.dmg 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo '')"
-          LIN_APPIMAGE="$(ls dist/linux/*.AppImage 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo '')"
+          # Helper: safely read first .sig file in a directory
+          read_sig() { local f; f="$(ls "$1"/*.sig 2>/dev/null | head -1)"; [ -f "$f" ] && cat "$f" || echo ""; }
 
-          LIN_SIG=""
-          if ls dist/linux-sigs/*.sig 2>/dev/null | head -1 | xargs test -f 2>/dev/null; then
-            LIN_SIG="$(cat dist/linux-sigs/*.sig | head -1)"
-          fi
+          WIN_SIG="$(read_sig dist/windows-sigs)"
+          MAC_SIG="$(read_sig dist/macos-sigs)"
+          LIN_SIG="$(read_sig dist/linux-sigs)"
+
+          # Helper: basename of first matching file
+          first_file() { local f; f="$(ls "$1" 2>/dev/null | head -1)"; [ -f "$f" ] && basename "$f" || echo ""; }
+
+          WIN_MSI="$(first_file 'dist/windows/*.msi')"
+          WIN_EXE="$(first_file 'dist/windows/*.exe')"
+          MAC_DMG="$(first_file 'dist/macos/*.dmg')"
+          LIN_APPIMAGE="$(first_file 'dist/linux/*.AppImage')"
+
+          # Prefer MSI over EXE for the updater URL
+          [ -z "$WIN_MSI" ] && WIN_MSI="$WIN_EXE"
 
           python3 - <<PYEOF
           import json, os
