@@ -78,13 +78,16 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
+      - name: Build frontend (explicit — errors visible here)
+        run: npm run build
+
       - name: Build Tauri app (Windows)
         shell: bash
         run: |
           # Skip updater signing if the key secret is absent (produces unsigned .msi/.exe)
           [[ -z "$TAURI_SIGNING_PRIVATE_KEY" ]] && \
             unset TAURI_SIGNING_PRIVATE_KEY TAURI_SIGNING_PRIVATE_KEY_PASSWORD
-          npx @tauri-apps/cli build
+          npx @tauri-apps/cli build --verbose
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
@@ -134,6 +137,9 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
+      - name: Build frontend (explicit — errors visible here)
+        run: npm run build
+
       - name: Build Tauri app (macOS universal)
         shell: bash
         run: |
@@ -143,7 +149,7 @@ jobs:
           [[ -z "$APPLE_CERTIFICATE" ]] && \
             unset APPLE_CERTIFICATE APPLE_CERTIFICATE_PASSWORD \
                   APPLE_SIGNING_IDENTITY APPLE_ID APPLE_PASSWORD APPLE_TEAM_ID
-          npx @tauri-apps/cli build --target universal-apple-darwin
+          npx @tauri-apps/cli build --target universal-apple-darwin --verbose
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
@@ -206,12 +212,15 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
+      - name: Build frontend (explicit — errors visible here)
+        run: npm run build
+
       - name: Build Tauri app (Linux)
         shell: bash
         run: |
           [[ -z "$TAURI_SIGNING_PRIVATE_KEY" ]] && \
             unset TAURI_SIGNING_PRIVATE_KEY TAURI_SIGNING_PRIVATE_KEY_PASSWORD
-          npx @tauri-apps/cli build
+          npx @tauri-apps/cli build --verbose
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
