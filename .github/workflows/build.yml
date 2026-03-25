@@ -82,15 +82,13 @@ jobs:
         run: npm run build
 
       - name: Build Tauri app (Windows)
-        shell: bash
-        run: |
-          # Skip updater signing if the key secret is absent (produces unsigned .msi/.exe)
-          [[ -z "$TAURI_SIGNING_PRIVATE_KEY" ]] && \
-            unset TAURI_SIGNING_PRIVATE_KEY TAURI_SIGNING_PRIVATE_KEY_PASSWORD
-          npx @tauri-apps/cli build --verbose
+        uses: tauri-apps/tauri-action@v0
         env:
+          GITHUB_TOKEN: ${{ github.token }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          args: --verbose
 
       - name: Upload Windows installer
         uses: actions/upload-artifact@v4
@@ -141,22 +139,19 @@ jobs:
         run: npm run build
 
       - name: Build Tauri app (macOS universal)
-        shell: bash
-        run: |
-          # Unset signing vars if the certificate secret is empty — Tauri 2
-          # calls `security import` even on empty strings, which crashes the build.
-          # When the vars are absent, Tauri produces an unsigned .dmg instead.
-          [[ -z "$APPLE_CERTIFICATE" ]] && \
-            unset APPLE_CERTIFICATE APPLE_CERTIFICATE_PASSWORD \
-                  APPLE_SIGNING_IDENTITY APPLE_ID APPLE_PASSWORD APPLE_TEAM_ID
-          npx @tauri-apps/cli build --target universal-apple-darwin --verbose
+        uses: tauri-apps/tauri-action@v0
         env:
+          GITHUB_TOKEN: ${{ github.token }}
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          args: --target universal-apple-darwin --verbose
 
       - name: Upload macOS bundle
         uses: actions/upload-artifact@v4
@@ -216,14 +211,13 @@ jobs:
         run: npm run build
 
       - name: Build Tauri app (Linux)
-        shell: bash
-        run: |
-          [[ -z "$TAURI_SIGNING_PRIVATE_KEY" ]] && \
-            unset TAURI_SIGNING_PRIVATE_KEY TAURI_SIGNING_PRIVATE_KEY_PASSWORD
-          npx @tauri-apps/cli build --verbose
+        uses: tauri-apps/tauri-action@v0
         env:
+          GITHUB_TOKEN: ${{ github.token }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          args: --verbose
 
       - name: Upload Linux AppImage
         uses: actions/upload-artifact@v4
