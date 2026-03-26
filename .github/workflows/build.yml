@@ -59,7 +59,7 @@ jobs:
     name: Bundle (Windows)
     needs: test
     runs-on: windows-latest
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
 
     steps:
       - uses: actions/checkout@v4
@@ -109,7 +109,7 @@ jobs:
     name: Bundle (macOS)
     needs: test
     runs-on: macos-latest
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
 
     steps:
       - uses: actions/checkout@v4
@@ -176,7 +176,7 @@ jobs:
     name: Bundle (Linux)
     needs: test
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
 
     steps:
       - uses: actions/checkout@v4
