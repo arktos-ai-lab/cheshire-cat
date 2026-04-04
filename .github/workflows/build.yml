@@ -79,6 +79,23 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
+      - name: Sync version from git tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          python3 - "$VERSION" <<'EOF'
+          import json, re, sys
+          v = sys.argv[1]
+          for path in ('src-tauri/tauri.conf.json', 'package.json'):
+              with open(path) as f: d = json.load(f)
+              d['version'] = v
+              with open(path, 'w') as f: json.dump(d, f, indent=2); f.write('\n')
+          with open('src-tauri/Cargo.toml') as f: txt = f.read()
+          txt = re.sub(r'(?m)^version = "[^"]*"', f'version = "{v}"', txt, count=1)
+          with open('src-tauri/Cargo.toml', 'w') as f: f.write(txt)
+          EOF
+
       - name: Build Tauri app (Windows)
         shell: bash
         run: npx tauri build --verbose
@@ -130,6 +147,23 @@ jobs:
 
       - name: Install frontend dependencies
         run: npm ci
+
+      - name: Sync version from git tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          python3 - "$VERSION" <<'EOF'
+          import json, re, sys
+          v = sys.argv[1]
+          for path in ('src-tauri/tauri.conf.json', 'package.json'):
+              with open(path) as f: d = json.load(f)
+              d['version'] = v
+              with open(path, 'w') as f: json.dump(d, f, indent=2); f.write('\n')
+          with open('src-tauri/Cargo.toml') as f: txt = f.read()
+          txt = re.sub(r'(?m)^version = "[^"]*"', f'version = "{v}"', txt, count=1)
+          with open('src-tauri/Cargo.toml', 'w') as f: f.write(txt)
+          EOF
 
       - name: Configure macOS signing (skip if secrets absent)
         shell: bash
@@ -210,6 +244,23 @@ jobs:
 
       - name: Install frontend dependencies
         run: npm ci
+
+      - name: Sync version from git tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          python3 - "$VERSION" <<'EOF'
+          import json, re, sys
+          v = sys.argv[1]
+          for path in ('src-tauri/tauri.conf.json', 'package.json'):
+              with open(path) as f: d = json.load(f)
+              d['version'] = v
+              with open(path, 'w') as f: json.dump(d, f, indent=2); f.write('\n')
+          with open('src-tauri/Cargo.toml') as f: txt = f.read()
+          txt = re.sub(r'(?m)^version = "[^"]*"', f'version = "{v}"', txt, count=1)
+          with open('src-tauri/Cargo.toml', 'w') as f: f.write(txt)
+          EOF
 
       - name: Build Tauri app (Linux)
         run: npx tauri build --verbose

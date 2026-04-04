@@ -1,6 +1,6 @@
 {
   "productName": "Cheshire CAT",
-  "version": "0.0.3",
+  "version": "0.0.6",
   "identifier": "dev.cheshirecat.app",
   "build": {
     "beforeDevCommand": "npm run dev",
